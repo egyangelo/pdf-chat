@@ -56,24 +56,28 @@ export async function getPineconeClient() {
   return pineconeClientInstance;
 }
 
-export const deleteChunksFromPinecone = async (filename: any) => {
-  const pineconeClient = await getPineconeClient();
-  const index = pineconeClient.Index(env.PINECONE_INDEX_NAME); // Specify the index name
+
+export async function deletePineconeVectorsWithAuthor() {
+  const pineconeClient = await initPineconeClient();
+  const index = pineconeClient.Index(env.PINECONE_INDEX_NAME);
+
+  const filter = {
+    filter: {
+      "$and": [
+        { "pdf.info.Author": "Mohanad Saleh Ba-Azzim" }
+      ]
+    }
+  };
 
   try {
-    // Use metadata filter to delete all vectors associated with the file
-    const response = await index.deleteByFilter({
-      filter: { filename: filename }, // Metadata filter
-    });
-
+    const response = await index.deleteByFilter(filter);
     if (response.status === 200) {
-      console.log(`Deleted chunks for file: ${filename}`);
+      console.log(`Deleted vectors with Author: ${filter.filter["$and"][0]["pdf.info.Author"]}`);
     } else {
       console.error("Deletion failed:", response);
-      throw new Error("Failed to delete chunks. Please check the filename.");
     }
   } catch (error) {
-    console.error("Error deleting chunks:", error);
-    throw new Error(`Unable to delete chunks for "${filename}".`);
+    console.error("Error deleting vectors:", error);
   }
-};
+}
+

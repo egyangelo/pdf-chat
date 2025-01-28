@@ -41,3 +41,28 @@ export async function getVectorStore(client: PineconeClient) {
     throw new Error("Something went wrong while getting vector store !");
   }
 }
+
+
+export async function deletePineconeVectorsWithAuthor() {
+  const pineconeClient = await pineconeClient();
+  const index = pineconeClient.Index(env.PINECONE_INDEX_NAME);
+
+  const filter = {
+    filter: {
+      "$and": [
+        { "pdf.info.Author": "Mohanad Saleh Ba-Azzim" }
+      ]
+    }
+  };
+
+  try {
+    const response = await index.deleteByFilter(filter);
+    if (response.status === 200) {
+      console.log(`Deleted vectors with Author: ${filter.filter["$and"][0]["pdf.info.Author"]}`);
+    } else {
+      console.error("Deletion failed:", response);
+    }
+  } catch (error) {
+    console.error("Error deleting vectors:", error);
+  }
+}
