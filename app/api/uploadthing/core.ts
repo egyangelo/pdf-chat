@@ -6,7 +6,7 @@ const f = createUploadthing();
 // FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
   pdfUpload: f({
-    pdf: { maxFileSize: "1MB", maxFileCount: 1 },
+    pdf: { maxFileSize: "32MB", maxFileCount: 10 },
   }).onUploadComplete(async ({ metadata, file }) => {
     console.log("file url", file.url);
     return { uploadedBy: "JB" };
