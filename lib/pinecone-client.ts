@@ -55,3 +55,25 @@ export async function getPineconeClient() {
   const pineconeClientInstance = await initPineconeClient();
   return pineconeClientInstance;
 }
+
+export const deleteChunksFromPinecone = async (filename: any) => {
+  const pineconeClient = await getPineconeClient();
+  const index = pineconeClient.Index(env.PINECONE_INDEX_NAME); // Specify the index name
+
+  try {
+    // Use metadata filter to delete all vectors associated with the file
+    const response = await index.deleteByFilter({
+      filter: { filename: filename }, // Metadata filter
+    });
+
+    if (response.status === 200) {
+      console.log(`Deleted chunks for file: ${filename}`);
+    } else {
+      console.error("Deletion failed:", response);
+      throw new Error("Failed to delete chunks. Please check the filename.");
+    }
+  } catch (error) {
+    console.error("Error deleting chunks:", error);
+    throw new Error(`Unable to delete chunks for "${filename}".`);
+  }
+};

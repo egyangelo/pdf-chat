@@ -7,10 +7,11 @@ import { Button } from "./ui/button";
 import { useEffect, useRef } from "react";
 import { ChatLine } from "./chat-line";
 import { Loader2 } from "lucide-react";
+import { set } from "zod";
 
 export function Chat() {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const { messages, input, handleInputChange, handleSubmit, isLoading, data } =
+  const { messages, input, handleInputChange, handleSubmit, isLoading, data, setMessages } =
     useChat({
       initialMessages,
     });
@@ -18,6 +19,11 @@ export function Chat() {
   useEffect(() => {
     setTimeout(() => scrollToBottom(containerRef), 100);
   }, [messages]);
+
+
+  const handleReset = () => {
+    setMessages(initialMessages);
+  }
 
   return (
     <div className="rounded-2xl border h-[75vh] flex flex-col justify-between">
@@ -41,15 +47,22 @@ export function Chat() {
           className="mr-2"
         />
 
-        {isLoading ? (
-          <Button disabled>
-            <Loader2 className="animate-spin" />
+        <div className="flex flex-row gap-2">
+          {isLoading ? (
+            <Button className="w-24" disabled>
+              <Loader2 className="animate-spin" />
+            </Button>
+          ) : (
+            <Button type="submit" className="w-24">
+              Ask
+            </Button>
+          )}
+          <Button
+            onClick={handleReset}
+            type="reset" className="w-24">
+            clear
           </Button>
-        ) : (
-          <Button type="submit" className="w-24">
-            Ask
-          </Button>
-        )}
+        </div>
       </form>
     </div>
   );

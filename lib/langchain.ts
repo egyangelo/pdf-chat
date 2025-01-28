@@ -25,8 +25,8 @@ export async function processUserMessage({
   try {
     // Create non-streaming model for inquiry generation
     const nonStreamingModel = new ChatOpenAI({
-      modelName: "gpt-3.5-turbo",
-      temperature: 0.3,
+      modelName: "gpt-4o-mini",
+      temperature: 0.2,
       streaming: true,
     });
 
@@ -40,7 +40,7 @@ export async function processUserMessage({
       });
 
     // Get relevant documents
-    const relevantDocs = await vectorStore.similaritySearch(inquiryResult, 3);
+    const relevantDocs = await vectorStore.similaritySearch(inquiryResult, 6);
     const context = relevantDocs.map((doc) => doc.pageContent).join("\n\n");
 
     return qaPrompt.pipe(model).pipe(new StringOutputParser()).stream({
@@ -81,7 +81,7 @@ const qaPrompt = ChatPromptTemplate.fromMessages([
 
     CORE RESPONSIBILITIES:
     - Base responses primarily on the provided context
-    - Cite specific parts of the context to support answers with file name, page number and clause number
+    - ALWAYS cite specific parts of the context to support answers with file name, page number and clause number
     - Maintain high accuracy and transparency
     - Acknowledge limitations clearly
 

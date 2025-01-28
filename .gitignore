@@ -39,3 +39,31 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+
+
+273255e7-dc7b-4ff8-8fc1-276f4ef3b51f
+
+Metadata
+loc.lines.from: 20
+loc.lines.to: 39
+loc.pageNumber: 24
+pdf.info.Author: "Mohanad Saleh Ba-Azzim"
+pdf.info.CreationDate: "D:20181129094139+03'00'"
+pdf.info.Creator: "Adobe Acrobat 8.0 Combine Files"
+pdf.info.IsAcroFormPresent: false
+pdf.info.IsXFAPresent: false
+pdf.info.ModDate: "D:20190311100834+03'00'"
+pdf.info.PDFFormatVersion: "1.6"
+pdf.info.Producer: "Adobe Acrobat 8.0; modified using iTextSharp 5.0.0 (c) 1T3XT BVBA"
+pdf.metadata._metadata.dc:creator: "Mohanad Saleh Ba-Azzim"
+pdf.metadata._metadata.dc:format: "application/pdf"
+pdf.metadata._metadata.pdf:producer: "Adobe Acrobat 8.0; modified using iTextSharp 5.0.0 (c) 1T3XT BVBA"
+pdf.metadata._metadata.xap:createdate: "2018-11-29T09:41:39+03:00"
+pdf.metadata._metadata.xap:creatortool: "Adobe Acrobat 8.0 Combine Files"
+pdf.metadata._metadata.xap:metadatadate: "2019-03-11T10:08:34+03:00"
+pdf.metadata._metadata.xap:modifydate: "2019-03-11T10:08:34+03:00"
+pdf.metadata._metadata.xapmm:documentid: "uuid:3ba5b13b-44f8-4cd4-a59e-b73b37438777"
+pdf.metadata._metadata.xapmm:instanceid: "uuid:4b03a23f-0a50-4640-ac44-dc7d29a7adb2"
+pdf.totalPages: 46

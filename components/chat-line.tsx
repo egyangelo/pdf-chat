@@ -40,7 +40,7 @@ export function ChatLine({
   const formattedMessage = convertNewLines(content);
 
   return (
-    <div>
+    <div className="w-full">
       <Card className="mb-2">
         <CardHeader>
           <CardTitle
