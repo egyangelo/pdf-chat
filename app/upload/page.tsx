@@ -11,6 +11,7 @@ export default function Page() {
   const [file, setFile] = useState<FileProps | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingMsg, setLoadingMsg] = useState("");
+
   async function submit() {
     try {
       setLoading(true);
@@ -26,6 +27,8 @@ export default function Page() {
       setLoading(false);
       setLoadingMsg("");
       console.log(error);
+    } finally {
+      setFile(null)
     }
   }
   return (

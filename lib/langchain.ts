@@ -26,8 +26,8 @@ export async function processUserMessage({
     // Create non-streaming model for inquiry generation
     const nonStreamingModel = new ChatOpenAI({
       modelName: "gpt-3.5-turbo",
-      temperature: 0,
-      streaming: false,
+      temperature: 0.3,
+      streaming: true,
     });
 
     // Generate focused inquiry using non-streaming model
@@ -81,7 +81,7 @@ const qaPrompt = ChatPromptTemplate.fromMessages([
 
     CORE RESPONSIBILITIES:
     - Base responses primarily on the provided context
-    - Cite specific parts of the context to support answers
+    - Cite specific parts of the context to support answers with file name, page number and clause number
     - Maintain high accuracy and transparency
     - Acknowledge limitations clearly
 
@@ -91,6 +91,9 @@ const qaPrompt = ChatPromptTemplate.fromMessages([
     3. Structure responses clearly and logically
     4. Include relevant quotes when beneficial
     5. State confidence levels when appropriate
+    6. make the reply in bullet points whenever possible
+    7. if there are tables in the context, include them in the reply in a formatted manner
+    8. if there is equations present it in a markdown format.
 
     IMPORTANT RULES:
     - Never make up information not present in the context
