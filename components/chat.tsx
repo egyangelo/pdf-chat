@@ -1,71 +1,83 @@
-"use client";
+"use client"
 
-import { scrollToBottom, initialMessages, getSources } from "@/lib/utils";
-import { useChat, Message } from "ai/react";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { useEffect, useRef } from "react";
-import { ChatLine } from "./chat-line";
-import { Loader2 } from "lucide-react";
-import { set } from "zod";
+import { useEffect, useRef, useState } from "react"
+import { useChat, type Message } from "ai/react"
+import { Loader2, ChevronRight, ChevronLeft, MessageSquare } from "lucide-react"
+import { Input } from "./ui/input"
+import { Button } from "./ui/button"
+import { ChatLine } from "./chat-line"
+import { scrollToBottom, initialMessages, getSources } from "@/lib/utils"
 
 export function Chat() {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const { messages, input, handleInputChange, handleSubmit, isLoading, data, setMessages } =
-    useChat({
-      initialMessages,
-    });
+  const [isPDFCollapsed, setIsPDFCollapsed] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const { messages, input, handleInputChange, handleSubmit, isLoading, setMessages, data } = useChat({
+    initialMessages,
+  })
 
   useEffect(() => {
-    if (containerRef.current) {
-      setTimeout(() => scrollToBottom(containerRef), 100);
-    }
+    setTimeout(() => scrollToBottom(containerRef), 100);
   }, [messages]);
 
-
   const handleReset = () => {
-    setMessages(initialMessages);
+    setMessages(initialMessages)
   }
 
+  const togglePDF = () => setIsPDFCollapsed(!isPDFCollapsed)
+
   return (
-    <div className="rounded-2xl border h-[75vh] flex flex-col justify-between">
-      <div className="p-6 overflow-auto" ref={containerRef}>
-        {messages.map(({ id, role, content }: Message, index) => (
-          <ChatLine
-            key={id}
-            role={role}
-            content={content}
-            // Start from the third message of the assistant
-            sources={[]}
-          />
-        ))}
-      </div>
-
-      <form onSubmit={handleSubmit} className="p-4 flex clear-both">
-        <Input
-          value={input}
-          placeholder={"Type to chat with AI..."}
-          onChange={handleInputChange}
-          className="mr-2"
-        />
-
-        <div className="flex flex-row gap-2">
-          {isLoading ? (
-            <Button className="w-24" disabled>
-              <Loader2 className="animate-spin" />
-            </Button>
-          ) : (
-            <Button type="submit" className="w-24">
-              Ask
-            </Button>
-          )}
-          <Button
-            onClick={handleReset}
-            type="reset" className="w-24">
-            clear
-          </Button>
+    <div className="flex flex-row h-[90dvh] w-full space-y-4 lg:space-y-0 lg:space-x-4 p-4 bg-gray-100">
+      <div className="flex-1 flex flex-col rounded-2xl border bg-white shadow-lg overflow-hidden">
+        <div className="bg-gray-100 p-4 border-b">
+          <h2 className="text-xl font-semibold flex items-center">
+            <MessageSquare className="mr-2" /> AskFahd
+          </h2>
         </div>
-      </form>
+        <div className="flex-1 p-2 overflow-x-hidden" ref={containerRef}>
+          {messages.map(({ id, role, content, data }: Message) => (
+            <ChatLine key={id} role={role} content={content} sources={data} />
+          ))}
+        </div>
+        <form onSubmit={handleSubmit} className="p-4 bg-gray-50 border-t">
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+            <Input
+              value={input}
+              placeholder="Type to chat with AI..."
+              onChange={handleInputChange}
+              className="flex-grow"
+            />
+            <div className="flex space-x-2">
+              <Button type="submit" className="flex-1 sm:flex-none" disabled={isLoading}>
+                {isLoading ? <Loader2 className="animate-spin mr-2" /> : null}
+                {isLoading ? "Thinking..." : "Ask"}
+              </Button>
+              <Button onClick={handleReset} type="reset" variant="outline" className="flex-1 sm:flex-none">
+                Clear
+              </Button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div
+        className={`relative transition-all duration-300 ease-in-out ${isPDFCollapsed ? "w-4" : "w-full sm:w-full lg:w-1/2 xl:w-2/5"}`}>
+        <Button
+          onClick={togglePDF}
+          className="absolute -left-3 top-1/2 transform -translate-y-1/2 z-10 h-24 shadow-md"
+          variant="secondary"
+        >
+          {isPDFCollapsed ? <ChevronLeft /> : <ChevronRight />}
+        </Button>
+        <div className="h-full rounded-2xl border bg-white shadow-lg overflow-hidden">
+          {!isPDFCollapsed && (
+            <iframe
+              className="w-full h-full"
+              title="PDF View"
+              src="https://utfs.io/f/GKKpbbWHodZahQmZ2g3Ji5qn91G7mTMCt3ehowxKVlBQEu8U#page=13"
+            />
+          )}
+        </div>
+      </div>
     </div>
-  );
+  )
 }
+

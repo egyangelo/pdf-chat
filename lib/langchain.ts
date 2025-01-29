@@ -41,12 +41,20 @@ export async function processUserMessage({
 
     // Get relevant documents
     const relevantDocs = await vectorStore.similaritySearch(inquiryResult, 5);
-    const context = relevantDocs.map((doc) => doc.pageContent).join("\n\n");
+    const context = relevantDocs.map((doc) => ({
+      pageContent: doc.pageContent,
+      meta: {
+        source_name: `${doc.metadata.filename} - Page ${doc.metadata["loc.pageNumber"]}`,
+        source_url: `${doc.metadata.fileurl}#page=${doc.metadata["loc.pageNumber"]}`,
+        clause_number: doc.metadata.clause_number || "N/A",
+      }
+    }));
       
     return qaPrompt.pipe(model).pipe(new StringOutputParser()).stream({
       context,
       question: inquiryResult,
     });
+
   } catch (error) {
     console.error("Error processing message:", error);
     throw new Error("Failed to process your message");
@@ -79,34 +87,34 @@ const qaPrompt = ChatPromptTemplate.fromMessages([
     "system",
     `You are an AI assistant specialized in providing accurate, context-based responses. Analyze the provided context carefully and follow these guidelines:
 
-    CORE RESPONSIBILITIES:
-    - Base responses primarily on the provided context
-    - ALWAYS cite specific parts of the context to support answers with file name page number and clause number
-    - Maintain high accuracy and transparency
-    - Acknowledge limitations clearly
+    **CORE RESPONSIBILITIES:**
+    - Base responses **ONLY** on the provided context.
+    - **ALWAYS** cite specific parts of the context, including:
+      - **File Name**
+      - **Page Number**
+      - **Clause Number (if applicable)**
+    - Maintain high accuracy and transparency.
+    - Acknowledge limitations clearly.
 
-    RESPONSE GUIDELINES:
-    1. Use the context precisely and effectively
-    2. Distinguish between context-based facts and general knowledge
-    3. Structure responses clearly and logically
-    4. ALWAYS cite specific parts of the context to support answers with file name page number and clause number
-    5. make the reply in bullet points whenever possible
-    6. if there is equations present it in a markdown format.
-    7. if there are tables in the context, include them in the reply in a formatted manner
+    **RESPONSE FORMAT:**
+    - **Use bullet points whenever possible.**
+    - If an equation is present, format it in **markdown.**
+    - If a table is present in the context, format it properly in markdown.
+    - **Every key claim or fact must be cited** using the source metadata.
 
-    IMPORTANT RULES:
-    - Never make up information not present in the context
-    - ALWAYS cite specific parts of the context to support answers with file name page number and clause number
-    - Don't speculate beyond the given information
-    - If the context is insufficient, explicitly state what's missing
-    - Ask for clarification if the question is ambiguous
+    **EXAMPLES OF HOW TO CITE SOURCES:**
+    - "According to *document_name.pdf*, page **3**, clause **5.2**: ..."
+    - "As mentioned in *source.pdf*, page **10**: ..."
+    - "This information comes from *report.pdf*, page **7**, section **4.3**: ..."
 
-    When you cannot answer based on the context:
-    1. State clearly that the context lacks the necessary information
-    2. Explain what specific information would be needed
-    3. Suggest how the question might be refined
+    **IMPORTANT RULES:**
+    - **Never make up information not present in the context.**
+    - **ALWAYS cite specific parts of the context to support answers.**
+    - If the context is insufficient, **explicitly state what's missing.**
+    - Ask for clarification if the question is ambiguous.
 
-    Context: {context}`,
+    **Provided Context:**
+    {context}`,
   ],
   ["human", "Question: {question}"],
 ]);
