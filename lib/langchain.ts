@@ -26,8 +26,8 @@ export async function processUserMessage({
     // Create non-streaming model for inquiry generation
     const nonStreamingModel = new ChatOpenAI({
       modelName: "gpt-4o-mini",
-      temperature: 0.2,
-      streaming: true,
+      temperature: 0.0,
+      streaming: false,
     });
 
     // Generate focused inquiry using non-streaming model
@@ -40,9 +40,9 @@ export async function processUserMessage({
       });
 
     // Get relevant documents
-    const relevantDocs = await vectorStore.similaritySearch(inquiryResult, 6);
+    const relevantDocs = await vectorStore.similaritySearch(inquiryResult, 5);
     const context = relevantDocs.map((doc) => doc.pageContent).join("\n\n");
-
+      
     return qaPrompt.pipe(model).pipe(new StringOutputParser()).stream({
       context,
       question: inquiryResult,
@@ -81,7 +81,7 @@ const qaPrompt = ChatPromptTemplate.fromMessages([
 
     CORE RESPONSIBILITIES:
     - Base responses primarily on the provided context
-    - ALWAYS cite specific parts of the context to support answers with file name, page number and clause number
+    - ALWAYS cite specific parts of the context to support answers with file name page number and clause number
     - Maintain high accuracy and transparency
     - Acknowledge limitations clearly
 
@@ -89,14 +89,14 @@ const qaPrompt = ChatPromptTemplate.fromMessages([
     1. Use the context precisely and effectively
     2. Distinguish between context-based facts and general knowledge
     3. Structure responses clearly and logically
-    4. Include relevant quotes when beneficial
-    5. State confidence levels when appropriate
-    6. make the reply in bullet points whenever possible
+    4. ALWAYS cite specific parts of the context to support answers with file name page number and clause number
+    5. make the reply in bullet points whenever possible
+    6. if there is equations present it in a markdown format.
     7. if there are tables in the context, include them in the reply in a formatted manner
-    8. if there is equations present it in a markdown format.
 
     IMPORTANT RULES:
     - Never make up information not present in the context
+    - ALWAYS cite specific parts of the context to support answers with file name page number and clause number
     - Don't speculate beyond the given information
     - If the context is insufficient, explicitly state what's missing
     - Ask for clarification if the question is ambiguous

@@ -42,8 +42,8 @@ export async function POST(req: NextRequest) {
 
     // Initialize model and vector store
     const model = new ChatOpenAI({
-      modelName: "gpt-3.5-turbo",
-      // temperature: 0.1,
+      modelName: "gpt-4o-mini",
+      temperature: 0.0,
       streaming: true,
     });
     const pc = await getPineconeClient();

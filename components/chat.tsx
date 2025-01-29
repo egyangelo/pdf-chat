@@ -17,7 +17,9 @@ export function Chat() {
     });
 
   useEffect(() => {
-    setTimeout(() => scrollToBottom(containerRef), 100);
+    if (containerRef.current) {
+      setTimeout(() => scrollToBottom(containerRef), 100);
+    }
   }, [messages]);
 
 

@@ -15,17 +15,19 @@ import { MdTextSnippet } from "react-icons/md"; // For .txt files
 
 type PDFUploadInputProps = {
   label: string;
-  file: FileProps | null;
-  setFile: any;
+  files: FileProps[];
+  setFiles: (files: FileProps[]) => void;
   className?: string;
   endpoint?: any;
 };
+
 export type FileProps = {
   title: string;
   type: string;
   size: number;
   url: string;
 };
+
 export function getFileIcon(extension: string | undefined) {
   switch (extension) {
     case "pdf":
@@ -64,17 +66,18 @@ export function getFileIcon(extension: string | undefined) {
       return <FaFileAlt className="w-6 h-6 flex-shrink-0 mr-2 text-gray-500" />; // Default icon for other file types
   }
 }
+
 export default function PDFFileUpload({
   label,
-  file,
-  setFile,
+  files,
+  setFiles,
   className = "col-span-full",
   endpoint = "",
 }: PDFUploadInputProps) {
-  function handleImageRemove() {
-    setFile(null);
+  function handleFileRemove(fileToRemove: FileProps) {
+    setFiles(files.filter(file => file.url !== fileToRemove.url));
   }
-  const extension = file ? file.title.split(".").pop() : "pdf";
+
   return (
     <div className={className}>
       <div className="flex justify-between items-center mb-4">
@@ -84,9 +87,9 @@ export default function PDFFileUpload({
         >
           {label}
         </label>
-        {file && (
+        {files.length > 0 && (
           <button
-            onClick={() => setFile(null)}
+            onClick={() => setFiles([])}
             type="button"
             className="flex space-x-2 bg-slate-900 rounded-md shadow text-slate-50 py-2 px-4"
           >
@@ -95,44 +98,46 @@ export default function PDFFileUpload({
           </button>
         )}
       </div>
-      {file ? (
-        <div className="grid grid-cols-1">
-          <div className="relative mb-6">
-            <button
-              type="button"
-              onClick={() => handleImageRemove()}
-              className="absolute -top-4 -right-2 bg-slate-100 text-red-600 rounded-full "
-            >
-              <XCircle className="" />
-            </button>
-            <div className="py-2 rounded-md px-6 bg-white dark:bg-slate-800 text-slate-800 flex items-center dark:text-slate-200 border border-slate-200">
-              {getFileIcon(extension)} {/* Render appropriate icon */}
-              <div className="flex flex-col">
-                <span className="line-clamp-1">{file.title}</span>
-                {file.size > 0 && (
-                  <span className="text-xs">
-                    {(file.size / 1000).toFixed(2)} kb
-                  </span>
-                )}
+      {files.length > 0 ? (
+        <div className="grid grid-cols-1 gap-4">
+          {files.map((file, index) => {
+            const extension = file.title.split(".").pop();
+            return (
+              <div key={index} className="relative">
+                <button
+                  type="button"
+                  onClick={() => handleFileRemove(file)}
+                  className="absolute -top-4 -right-2 bg-slate-100 text-red-600 rounded-full"
+                >
+                  <XCircle />
+                </button>
+                <div className="py-2 rounded-md px-6 bg-white dark:bg-slate-800 text-slate-800 flex items-center dark:text-slate-200 border border-slate-200">
+                  {getFileIcon(extension)}
+                  <div className="flex flex-col">
+                    <span className="line-clamp-1">{file.title}</span>
+                    {file.size > 0 && (
+                      <span className="text-xs">
+                        {(file.size / 1000).toFixed(2)} kb
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            );
+          })}
         </div>
       ) : (
         <UploadDropzone
           className="ut-allowed-content:hidden"
           endpoint={endpoint}
           onClientUploadComplete={(res: any) => {
-            const item = res[0];
-            const url = {
+            const uploadedFiles = res.map((item: any) => ({
               url: item.url,
               title: item.name,
               size: item.size,
               type: item.type,
-            };
-            setFile(url);
-            console.log(url);
-            console.log(res);
+            }));
+            setFiles([...files, ...uploadedFiles]);
             console.log("Upload Completed");
           }}
           onUploadError={(error: any) => {

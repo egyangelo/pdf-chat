@@ -20,10 +20,8 @@ async function initPineconeClient() {
       const index = pineconeClient.Index(indexName); // Attempt to retrieve the index
       console.log(`Pinecone index '${indexName}' found and ready.`);
     } catch (error) {
-      if (error instanceof Error) {
-        console.error(`Error finding index '${indexName}':`, error.message);
-      }
-      // Index not found, create a new one
+      console.error(`Error finding index '${indexName}':`, error);
+      // Create new index if not found
       await pineconeClient.createIndex({
         name: indexName,
         dimension: 1536, // Ensure this matches your embedding vector size
@@ -42,42 +40,26 @@ async function initPineconeClient() {
 
     return pineconeClient;
   } catch (error) {
-    if (error instanceof Error) {
-      console.error("Failed to initialize Pinecone Client:", error.message);
-    } else {
-      console.error("Unknown error occurred:", error);
-    }
+    console.error("Failed to initialize Pinecone Client:", error);
     throw new Error("Failed to initialize Pinecone Client");
   }
 }
 
 export async function getPineconeClient() {
-  const pineconeClientInstance = await initPineconeClient();
-  return pineconeClientInstance;
+  return await initPineconeClient();
 }
 
-
-export async function deletePineconeVectorsWithAuthor() {
-  const pineconeClient = await initPineconeClient();
-  const index = pineconeClient.Index(env.PINECONE_INDEX_NAME);
-
-  const filter = {
-    filter: {
-      "$and": [
-        { "pdf.info.Author": "Mohanad Saleh Ba-Azzim" }
-      ]
-    }
-  };
-
+// Delete vectors by metadata filter
+export async function deleteVectorsByMetadata(filter: Record<string, any>) {
   try {
-    const response = await index.deleteByFilter(filter);
-    if (response.status === 200) {
-      console.log(`Deleted vectors with Author: ${filter.filter["$and"][0]["pdf.info.Author"]}`);
-    } else {
-      console.error("Deletion failed:", response);
-    }
+    const pineconeClient = await initPineconeClient();
+    const index = pineconeClient.Index(env.PINECONE_INDEX_NAME);
+
+    await index.deleteMany({ filter });
+    console.log("Deleted vectors with filter:", filter);
+    return true;
   } catch (error) {
     console.error("Error deleting vectors:", error);
+    throw new Error("Failed to delete vectors");
   }
 }
-
