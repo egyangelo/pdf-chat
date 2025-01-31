@@ -67,8 +67,8 @@ export async function embedAndStoreMultipleDocs(
 }
 
 export async function getVectorStore(
-  client: PineconeClient, 
-  options?: { 
+  client: PineconeClient,
+  options?: {
     filename?: string;
     fileId?: string;
   }
@@ -100,7 +100,7 @@ export async function getVectorStore(
 export async function deleteVectorsByFileId(client: PineconeClient, fileId: string) {
   try {
     const index = client.Index(env.PINECONE_INDEX_NAME);
-    
+
     const deleteFilter = {
       filter: {
         fileId: { $eq: fileId }
@@ -119,7 +119,7 @@ export async function deleteVectorsByFileId(client: PineconeClient, fileId: stri
 export async function deleteVectorsByFilename(client: PineconeClient, filename: string) {
   try {
     const index = client.Index(env.PINECONE_INDEX_NAME);
-    
+
     const deleteFilter = {
       filter: {
         filename: { $eq: filename }
@@ -127,11 +127,49 @@ export async function deleteVectorsByFilename(client: PineconeClient, filename: 
     };
 
     await index.deleteMany(deleteFilter);
-    console.log(`Deleted vectors for file: ${filename}`);
+    console.log(`Deleted vectors for filename: ${filename}`);
     return true;
   } catch (error) {
     console.error("Error deleting vectors:", error);
-    throw new Error(`Failed to delete vectors for file: ${filename}`);
+    throw new Error(`Failed to delete vectors for filename: ${filename}`);
   }
 }
 
+export async function countVectorsByFilename(client: PineconeClient, filename: string): Promise<number> {
+  try {
+    const index = client.Index(process.env.PINECONE_INDEX_NAME!);
+
+    const queryResponse = await index.query({
+      filter: { filename: filename },
+      limit: 1000, // Retrieve up to 1000 vectors (adjust if needed)
+      includeMetadata: false,
+    });
+
+    return queryResponse.matches.length; // Number of vectors retrieved
+  } catch (error) {
+    console.error("Error counting vectors:", error);
+    throw new Error(`Failed to count vectors for filename: ${filename}`);
+  }
+}
+
+
+export async function getVectorIdsByFilename(client: PineconeClient, filename: string): Promise<string[]> {
+  try {
+    const index = client.Index(process.env.PINECONE_INDEX_NAME!);
+
+    const queryResponse = await index.query({
+      vector: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
+      topK: 1000,
+      includeMetadata: true,
+      filter: {
+        "filename": { "$eq": filename }
+      }
+    });
+
+    console.log("Query response:", queryResponse);
+    return queryResponse.matches.map(match => match.id); // Extract IDs from matches
+  } catch (error) {
+    console.error("Error retrieving vector IDs:", error);
+    throw new Error(`Failed to retrieve vector IDs for filename: ${filename}`);
+  }
+}

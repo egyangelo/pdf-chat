@@ -4,7 +4,7 @@ import { Button } from "./ui/button"
 import type { Message } from "ai/react"
 import ReactMarkdown from "react-markdown"
 import { formattedText } from "@/lib/utils"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 interface ChatLineProps {
   role?: string;
@@ -17,32 +17,31 @@ export function ChatLine({ role = "assistant", content, data }: ChatLineProps) {
     return null;
   }
 
-  const sources = JSON.stringify(data)
-  const [sourceUrlPDF, setSourceUrlPDF] = useState(null)
+  // const sources = JSON.stringify(data)
+  // const [sourceUrlPDF, setSourceUrlPDF] = useState(null)
 
   const isUser = role !== "assistant"
 
   const handleSourceSelect = () => {
-    setSourceUrlPDF(null)
+    // setSourceUrlPDF(null)
   }
 
 
   return (
-    <div className={`flex w-full m-2 p-2 ${isUser ? "justify-end" : "justify-start"}`}>
-      <Card className={`max-w-[90%] ${isUser ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
-        <CardHeader className={`flex ${!isUser ? "flex-row" : "flex-row-reverse"} items-center gap-2 p-2`}>
-          <Image
-            src={isUser ? "/user-avatar.png" : "/ai-avatar.png"}
-            alt={isUser ? "User Avatar" : "AI Avatar"}
-            width={40}
-            height={40}
-            className="rounded-full"
-          />
-          <div>
-            <h3 className="font-semibold">{isUser ? "You" : "AI Assistant"}</h3>
+    <div className={`flex w-full m-2 p-2 justify-start items-start`}>
+          <div className="hidden md:block">
+            <Image
+              src={isUser ? "/user-avatar.png" : "/ai-avatar.png"}
+              alt={isUser ? "User Avatar" : "AI Avatar"}
+              width={40}
+              height={40}
+              className="rounded-full m-2"
+            />
           </div>
+      <Card className={`max-w-[90%] ${isUser ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
+        <CardHeader className={`flex items-center gap-2 p-2 ${!isUser ? "flex-row" : "flex-row-reverse"} `}>
         </CardHeader>
-        <CardContent className="text-sm prose dark:prose-invert max-w-none p-4">
+        <CardContent className="text-sm prose dark:prose-invert p-4">
           <ReactMarkdown
             components={{
               a: ({ node, ...props }) => (
@@ -65,12 +64,24 @@ export function ChatLine({ role = "assistant", content, data }: ChatLineProps) {
           </ReactMarkdown>
         </CardContent>
         {role == "assistant" &&
-          <CardFooter className="mb-0">
+          <CardFooter className="m-0 p-0">
             <Button
               variant="outline"
               className="m-0"
               onClick={handleSourceSelect}>
               source - 1
+            </Button>
+            <Button
+              variant="outline"
+              className="m-0"
+              onClick={handleSourceSelect}>
+              source - 2
+            </Button>
+            <Button
+              variant="outline"
+              className="m-0"
+              onClick={handleSourceSelect}>
+              source - 3
             </Button>
           </CardFooter>}
       </Card>

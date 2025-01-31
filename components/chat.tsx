@@ -15,13 +15,14 @@ export function Chat() {
     initialMessages,
   })
 
-  useEffect(() => {
-    setTimeout(() => scrollToBottom(containerRef), 100);
-  }, [messages]);
-
   const handleReset = () => {
     setMessages(initialMessages)
   }
+
+  useEffect(() => {
+    // Log the new message when it is receive
+      console.log("New message received:", data);
+  }, [messages]); // Trigger when messages change
 
   const togglePDF = () => setIsPDFCollapsed(!isPDFCollapsed)
 

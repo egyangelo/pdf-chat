@@ -44,12 +44,13 @@ export async function processUserMessage({
     const context = relevantDocs.map((doc) => ({
       pageContent: doc.pageContent,
       meta: {
-        source_name: `${doc.metadata.filename} - Page ${doc.metadata["loc.pageNumber"]}`,
-        source_url: `${doc.metadata.fileurl}#page=${doc.metadata["loc.pageNumber"]}`,
+        source_name: `${doc.metadata.filename}-Page${doc.metadata.pageNumber}`,
+        source_url: `${doc.metadata.fileurl}#page=${doc.metadata.pageNumber}`,
         clause_number: doc.metadata.clause_number || "N/A",
       }
     }));
-      
+    console.log("----------- Context ----------------",context)
+
     return qaPrompt.pipe(model).pipe(new StringOutputParser()).stream({
       context,
       question: inquiryResult,

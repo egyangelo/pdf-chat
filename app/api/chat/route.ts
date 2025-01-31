@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     }
     // Format conversation history
     const formattedPreviousMessages = messages
-      .slice(0, -1)
+      .slice(Math.max(messages.length - 2, 0))
       .map(
         (message) =>
           `${message.role === "user" ? "Human" : "Assistant"}: ${
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     // Initialize model and vector store
     const model = new ChatOpenAI({
       modelName: "gpt-4o-mini",
-      temperature: 0.0,
+      temperature: 0.1,
       streaming: true,
     });
     const pc = await getPineconeClient();

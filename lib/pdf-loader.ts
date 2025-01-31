@@ -47,7 +47,7 @@ export async function getChunkedDocsFromPDF(pdfSource: PDFSource) {
 
     // Split into chunks
     const textSplitter = new RecursiveCharacterTextSplitter({
-      chunkSize: 1000,
+      chunkSize: 1500,
       chunkOverlap: 200,
     });
 
@@ -109,7 +109,7 @@ export async function getChunkedDocsFromMultiplePDFs(pdfSources: PDFSource[]) {
 
     // Split into chunks
     const textSplitter = new RecursiveCharacterTextSplitter({
-      chunkSize: 1000,
+      chunkSize: 1500,
       chunkOverlap: 200,
     });
 
