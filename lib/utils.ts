@@ -17,6 +17,7 @@ export function scrollToBottom(containerRef: React.RefObject<HTMLElement>) {
     }
   }
 }
+
 export const formatChatHistory = (chatHistory: [string, string][]) => {
   const formattedDialogueTurns = chatHistory.map(
     (dialogueTurn) => `Human: ${dialogueTurn[0]}\nAssistant: ${dialogueTurn[1]}`

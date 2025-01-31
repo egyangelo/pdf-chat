@@ -34,8 +34,7 @@ export async function POST(req: NextRequest) {
       .slice(Math.max(messages.length - 2, 0))
       .map(
         (message) =>
-          `${message.role === "user" ? "Human" : "Assistant"}: ${
-            message.content
+          `${message.role === "user" ? "Human" : "Assistant"}: ${message.content
           }`
       )
       .join("\n");
@@ -55,10 +54,10 @@ export async function POST(req: NextRequest) {
       vectorStore,
       model,
     });
-    console.log("message answer =>", stream);
-    // console.log("message inquiry =>", inquiry);
+    // console.log("message answer ------------- =>", stream);
     // Convert the stream using the new adapter
     const response = LangChainAdapter.toDataStreamResponse(stream);
+    // console.log("Response ----------- =>", response);
     return response;
   } catch (error) {
     console.error("Chat endpoint error:", error);

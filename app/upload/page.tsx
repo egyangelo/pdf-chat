@@ -6,6 +6,7 @@ import { PDFSource } from "@/lib/pdf-loader";
 import { Loader2 } from "lucide-react";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import { metadata } from "../layout";
 
 export default function Page() {
   const [files, setFiles] = useState<FileProps[]>([]);

@@ -10,6 +10,7 @@ export async function prepare(pdfSources: PDFSource[]) {
     
     for (const pdfSource of pdfSources) {
       console.log(`Processing ${pdfSource.filename}...`);
+      
       const docs = await getChunkedDocsFromPDF(pdfSource);
       console.log(`Got ${docs.length} chunks from ${pdfSource.filename}`);
       

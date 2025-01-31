@@ -26,7 +26,7 @@ export async function processUserMessage({
     // Create non-streaming model for inquiry generation
     const nonStreamingModel = new ChatOpenAI({
       modelName: "gpt-4o-mini",
-      temperature: 0.0,
+      temperature: 0.1,
       streaming: false,
     });
 
@@ -41,15 +41,23 @@ export async function processUserMessage({
 
     // Get relevant documents
     const relevantDocs = await vectorStore.similaritySearch(inquiryResult, 5);
-    const context = relevantDocs.map((doc) => ({
-      pageContent: doc.pageContent,
-      meta: {
-        source_name: `${doc.metadata.filename}-Page${doc.metadata.pageNumber}`,
-        source_url: `${doc.metadata.fileurl}#page=${doc.metadata.pageNumber}`,
-        clause_number: doc.metadata.clause_number || "N/A",
-      }
-    }));
-    console.log("----------- Context ----------------",context)
+    const context = relevantDocs.map((doc) => {
+
+      // Extract page number safely
+      const pageNumber = doc.metadata?.['loc.pageNumber']
+      const fileName = doc.metadata.filename
+      const fileurl = doc.metadata.fileurl
+
+      return {
+        pageContent: doc.pageContent,
+        meta: {
+          source_name: `${fileName}-Page${pageNumber}`,
+          source_url: `${fileurl}#page=${pageNumber}`,
+        },
+      };
+    });
+
+    // console.log("----------- Context ----------------", context)
 
     return qaPrompt.pipe(model).pipe(new StringOutputParser()).stream({
       context,
@@ -71,9 +79,6 @@ const inquiryPrompt = ChatPromptTemplate.fromMessages([
     Rules:
     - Always prioritize the user prompt over the conversation log
     - Ignore any conversation log that is not directly related to the user prompt
-    - Only attempt to answer if a question was posed
-    - The question should be a single sentence
-    - Remove any punctuation from the question
     - Remove any words that are not relevant to the question
     - If unable to formulate a question, respond with the same USER PROMPT received`,
   ],
@@ -92,7 +97,7 @@ const qaPrompt = ChatPromptTemplate.fromMessages([
     - Base responses **ONLY** on the provided context.
     - **ALWAYS** cite specific parts of the context, including:
       - **File Name**
-      - **Page Number**
+      - **Page Number (if applicable)**
       - **Clause Number (if applicable)**
     - Maintain high accuracy and transparency.
     - Acknowledge limitations clearly.

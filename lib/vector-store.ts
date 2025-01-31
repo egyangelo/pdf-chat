@@ -26,6 +26,7 @@ export async function embedAndStoreDocs(
     const docsWithMetadata = docs.map((doc, index) => ({
       ...doc,
       metadata: {
+        ...doc.metadata,
         filename,
         fileId,
         chunk: index + 1,
@@ -151,7 +152,6 @@ export async function countVectorsByFilename(client: PineconeClient, filename: s
     throw new Error(`Failed to count vectors for filename: ${filename}`);
   }
 }
-
 
 export async function getVectorIdsByFilename(client: PineconeClient, filename: string): Promise<string[]> {
   try {

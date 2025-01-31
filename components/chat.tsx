@@ -20,6 +20,11 @@ export function Chat() {
   }
 
   useEffect(() => {
+    setTimeout(() => scrollToBottom(containerRef), 100);
+  }, [messages]);
+
+
+  useEffect(() => {
     // Log the new message when it is receive
       console.log("New message received:", data);
   }, [messages]); // Trigger when messages change
