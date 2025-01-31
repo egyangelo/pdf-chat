@@ -40,7 +40,7 @@ export async function processUserMessage({
       });
 
     // Get relevant documents
-    const relevantDocs = await vectorStore.similaritySearch(inquiryResult, 5);
+    const relevantDocs = await vectorStore.similaritySearch(inquiryResult, 4);
     const context = relevantDocs.map((doc) => {
 
       // Extract page number safely
@@ -104,9 +104,10 @@ const qaPrompt = ChatPromptTemplate.fromMessages([
 
     **RESPONSE FORMAT:**
     - **Use bullet points whenever possible.**
-    - If an equation is present, format it in **markdown.**
+    - use the specific LaTeX math mode delimiters $$ at the stand and $$ at the end of the equation or math expression
     - If a table is present in the context, format it properly in markdown.
     - **Every key claim or fact must be cited** using the source metadata.
+
 
     **EXAMPLES OF HOW TO CITE SOURCES:**
     - "According to *document_name.pdf*, page **3**, clause **5.2**: ..."
