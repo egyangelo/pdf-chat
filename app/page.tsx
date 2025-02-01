@@ -7,7 +7,7 @@ export default function Home() {
         <span className="font-bold">Fahd AI SEC Standard Assistant</span>
       </div>
       <div className="flex py-4">
-        <div className="w-full h-full">
+        <div className="w-full">
           <Chat />
         </div>
       </div>

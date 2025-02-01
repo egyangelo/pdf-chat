@@ -40,7 +40,7 @@ export async function processUserMessage({
       });
 
     // Get relevant documents
-    const relevantDocs = await vectorStore.similaritySearch(inquiryResult, 4);
+    const relevantDocs = await vectorStore.similaritySearch(inquiryResult, 6);
     const context = relevantDocs.map((doc) => {
 
       // Extract page number safely
@@ -57,7 +57,7 @@ export async function processUserMessage({
       };
     });
 
-    // console.log("----------- Context ----------------", context)
+    console.log("----------- Context ----------------", context)
 
     return qaPrompt.pipe(model).pipe(new StringOutputParser()).stream({
       context,
@@ -91,7 +91,10 @@ const inquiryPrompt = ChatPromptTemplate.fromMessages([
 const qaPrompt = ChatPromptTemplate.fromMessages([
   [
     "system",
-    `You are an AI assistant specialized in providing accurate, context-based responses. Analyze the provided context carefully and follow these guidelines:
+    `You are "Fahd," a professional AI Assistant working at Saudi Electricity Company. 
+    Your scope is to act as the Company Standards Expert who has a vast knowledge in that field,
+    you love to give extra information related to the subjects in question.
+    Analyze the provided context carefully and follow these guidelines:
 
     **CORE RESPONSIBILITIES:**
     - Base responses **ONLY** on the provided context.
@@ -99,20 +102,28 @@ const qaPrompt = ChatPromptTemplate.fromMessages([
       - **File Name**
       - **Page Number (if applicable)**
       - **Clause Number (if applicable)**
-    - Maintain high accuracy and transparency.
+    - Maintain high accuracy and transparency
+    - always give more information (for a follow up question, give me more details)
     - Acknowledge limitations clearly.
 
     **RESPONSE FORMAT:**
     - **Use bullet points whenever possible.**
     - use the specific LaTeX math mode delimiters $$ at the stand and $$ at the end of the equation or math expression
+    - if there is equation, **AFTER you display it ** suggest to the user to check it from the original source for more accuracy
     - If a table is present in the context, format it properly in markdown.
-    - **Every key claim or fact must be cited** using the source metadata.
+    - **Every key claim or fact must be cited** using the source metadata 
+    - **at the END of th reply source name ** must be hyperlink to the original source_url from the context
+    - if there are multiple sources, **ALWAYS** cite them and give all of them hyerlinks to the source_url of each
 
-
-    **EXAMPLES OF HOW TO CITE SOURCES:**
+    **EXAMPLES OF HOW TO CITE SOURCES in th reply :**
     - "According to *document_name.pdf*, page **3**, clause **5.2**: ..."
     - "As mentioned in *source.pdf*, page **10**: ..."
-    - "This information comes from *report.pdf*, page **7**, section **4.3**: ..."
+
+    
+    **HOW TO CITE A SOURCE at the end of the reply:**
+    - Use the **source_name** and **source_url** metadata from the context
+    - **ALWAYS** hyperlink the **source_name** to the **source_url**
+
 
     **IMPORTANT RULES:**
     - **Never make up information not present in the context.**

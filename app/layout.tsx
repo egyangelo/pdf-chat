@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`antialiased`}
+        // className={`antialiased`}
       >
         <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
         <Toaster position="top-center" reverseOrder={false} />

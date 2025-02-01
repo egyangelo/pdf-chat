@@ -2,14 +2,13 @@
 
 import { useEffect, useRef, useState } from "react"
 import { useChat, type Message } from "ai/react"
-import { Loader2, ChevronRight, ChevronLeft, MessageSquare } from "lucide-react"
+import { Loader2, MessageSquare } from "lucide-react"
 import { Input } from "./ui/input"
 import { Button } from "./ui/button"
 import { ChatLine } from "./chat-line"
-import { scrollToBottom, initialMessages, getSources } from "@/lib/utils"
+import { scrollToBottom, initialMessages } from "@/lib/utils"
 
 export function Chat() {
-  const [isPDFCollapsed, setIsPDFCollapsed] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const { messages, input, handleInputChange, handleSubmit, isLoading, setMessages, data } = useChat({
     initialMessages,
@@ -26,10 +25,8 @@ export function Chat() {
 
   useEffect(() => {
     // Log the new message when it is receive
-      console.log("New message received:", data);
+    console.log("New message received:", data);
   }, [messages]); // Trigger when messages change
-
-  const togglePDF = () => setIsPDFCollapsed(!isPDFCollapsed)
 
   return (
     <div className="flex flex-row h-[90dvh] w-full space-y-4 lg:space-y-0 lg:space-x-4 p-4 bg-gray-100">
@@ -63,25 +60,6 @@ export function Chat() {
             </div>
           </div>
         </form>
-      </div>
-      <div
-        className={`relative transition-all duration-300 ease-in-out ${isPDFCollapsed ? "w-4" : "w-full sm:w-full lg:w-1/2 xl:w-2/5"}`}>
-        <Button
-          onClick={togglePDF}
-          className="absolute -left-3 top-1/2 transform -translate-y-1/2 z-10 h-24 shadow-md"
-          variant="secondary"
-        >
-          {isPDFCollapsed ? <ChevronLeft /> : <ChevronRight />}
-        </Button>
-        <div className="h-full rounded-2xl border bg-white shadow-lg overflow-hidden">
-          {!isPDFCollapsed && (
-            <iframe
-              className="w-full h-full"
-              title="PDF View"
-              src="https://utfs.io/f/GKKpbbWHodZahQmZ2g3Ji5qn91G7mTMCt3ehowxKVlBQEu8U#page=13"
-            />
-          )}
-        </div>
       </div>
     </div>
   )

@@ -10,6 +10,11 @@ import { getPineconeClient } from "@/lib/pinecone-client";
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
+type Source = {
+  source_name: string
+  source_url: string
+}
+
 export async function POST(req: NextRequest) {
   try {
     // Parse and validate request
@@ -45,6 +50,7 @@ export async function POST(req: NextRequest) {
       temperature: 0.1,
       streaming: true,
     });
+    
     const pc = await getPineconeClient();
     const vectorStore = await getVectorStore(pc);
     const parser = new StringOutputParser();
@@ -54,13 +60,15 @@ export async function POST(req: NextRequest) {
       vectorStore,
       model,
     });
-    // console.log("message answer ------------- =>", stream);
+    console.log("message answer ------------- =>", stream);
     // Convert the stream using the new adapter
     const response = LangChainAdapter.toDataStreamResponse(stream);
     // console.log("Response ----------- =>", response);
     return response;
+
   } catch (error) {
     console.error("Chat endpoint error:", error);
+
     return NextResponse.json(
       { error: "An unexpected error occurred" },
       { status: 500 }
